@@ -18,9 +18,6 @@ import (
 	"github.com/gocolly/colly"
 )
 
-type Data struct {
-	Batches [][]string `json:"batches"`
-}
 type Output struct {
 	ObjectKey  string `json:"objectKey"`
 	BucketName string `json:"bucketName"`
@@ -75,9 +72,8 @@ func handler() (Output, error) {
 }
 
 func storeData(batches [][]string) (string, error) {
-	dataToStore := Data{Batches: batches}
 
-	data, err := json.Marshal(dataToStore)
+	data, err := json.Marshal(batches)
 	if err != nil {
 		log.Printf("Error marshaling combined batch data: %v", err)
 		return "", err
