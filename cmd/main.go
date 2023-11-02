@@ -24,6 +24,11 @@ type Output struct {
 	BatchCount int    `json:"batchCount"`
 }
 
+type Batch struct {
+	BatchID int      `json:"batchID"`
+	Value   []string `json:"value"`
+}
+
 var bucketName = "mamarkt-bucket"
 
 func main() {
@@ -71,8 +76,7 @@ func handler() (Output, error) {
 	return out, nil
 }
 
-func storeData(batches [][]string) (string, error) {
-
+func storeData(batches []Batch) (string, error) {
 	data, err := json.Marshal(batches)
 	if err != nil {
 		log.Printf("Error marshaling combined batch data: %v", err)
@@ -156,15 +160,18 @@ func filterXMLs(collectedXMLs []string, pattern string) []string {
 	return filtered
 }
 
-func splitBatches(collectedProductUrls []string) [][]string {
-	var batches [][]string
+func splitBatches(collectedProductUrls []string) []Batch {
+	var batches []Batch
 	for i := 0; i < len(collectedProductUrls); i += 25 {
 		end := i + 25
 		if end > len(collectedProductUrls) {
 			end = len(collectedProductUrls)
 		}
 
-		batch := collectedProductUrls[i:end]
+		batch := Batch{
+			BatchID: i/25 + 1,
+			Value:   collectedProductUrls[i:end],
+		}
 
 		batches = append(batches, batch)
 	}
